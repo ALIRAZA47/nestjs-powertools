@@ -15,8 +15,14 @@ import type {
   AuditStorage,
   PaginatedResponse,
 } from '../types/generics';
-import { AuditAction, AuditLevel, LogContext } from '../types/enums';
+import {
+  AuditAction,
+  AuditLevel,
+  LogContext,
+  ResponseStatus,
+} from '../types/enums';
 import { PowertoolsConfigService } from '../config/powertools.config';
+import * as fs from 'fs/promises';
 
 /**
  * MongoDB-based audit storage implementation with generic type support
@@ -135,7 +141,7 @@ export class MongoAuditStorage<TUser = any, TMetadata = any>
         hasNext: false,
         hasPrevious: false,
       },
-      status: 'success' as any,
+      status: ResponseStatus.SUCCESS,
       timestamp: new Date().toISOString(),
     };
   }
@@ -351,7 +357,7 @@ export class InMemoryAuditStorage<TUser = any, TMetadata = any>
         hasNext: endIndex < filteredLogs.length,
         hasPrevious: page > 1,
       },
-      status: 'success' as any,
+      status: ResponseStatus.SUCCESS,
       timestamp: new Date().toISOString(),
     };
   }
@@ -434,6 +440,196 @@ export class InMemoryAuditStorage<TUser = any, TMetadata = any>
   clearLogs(): void {
     this.logs = [];
   }
+}
+
+/**
+ * File-based audit storage implementation (JSON file)
+ *
+ * @template TUser - Type of the user object being audited
+ * @template TMetadata - Type of custom metadata attached to audit entries
+ *
+ * @param filePath - Path to the JSON file for storing logs (default: './audit-logs.json')
+ *
+ * @example
+ * const storage = new FileAuditStorage('./my-audit-logs.json');
+ * await storage.save({ ... });
+ *
+ * @see AuditStorage for method details
+ */
+@Injectable()
+export class FileAuditStorage<TUser = any, TMetadata = any>
+  implements AuditStorage<AuditLogEntry<TUser, TMetadata>>
+{
+  private readonly logger = new Logger(FileAuditStorage.name);
+  private filePath: string;
+
+  /**
+   * @param filePath Path to the JSON file for storing logs (default: './audit-logs.json')
+   */
+  constructor(filePath?: string) {
+    this.filePath = filePath || './audit-logs.json';
+  }
+
+  /**
+   * Save an audit log entry to the file
+   * @param entry The audit log entry to save
+   */
+  async save(entry: AuditLogEntry<TUser, TMetadata>): Promise<void> {
+    try {
+      let logs: any[] = [];
+      try {
+        const data = await fs.readFile(this.filePath, 'utf-8');
+        logs = JSON.parse(data);
+      } catch {}
+      logs.push(entry);
+      await fs.writeFile(this.filePath, JSON.stringify(logs, null, 2));
+      this.logger.log(`Audit log saved to file: ${this.filePath}`);
+    } catch (error) {
+      this.logger.error('Failed to save audit log to file', error);
+    }
+  }
+
+  /**
+   * Find audit log entries with optional filters and pagination
+   * @param filters Filter object
+   * @param pagination Pagination options { page, limit }
+   * @returns PaginatedResponse of audit log entries
+   */
+  async find(
+    filters: Partial<AuditLogEntry<TUser, TMetadata>>,
+    pagination?: { page?: number; limit?: number },
+  ): Promise<PaginatedResponse<AuditLogEntry<TUser, TMetadata>>> {
+    try {
+      const data = await fs.readFile(this.filePath, 'utf-8');
+      let logs = JSON.parse(data) as AuditLogEntry<TUser, TMetadata>[];
+      logs = logs.filter((log) =>
+        Object.entries(filters).every(
+          ([k, v]) => log[k as keyof AuditLogEntry<TUser, TMetadata>] === v,
+        ),
+      );
+      // Pagination
+      const page = pagination?.page || 1;
+      const limit = pagination?.limit || 10;
+      const total = logs.length;
+      const totalPages = Math.ceil(total / limit);
+      const paged = logs.slice((page - 1) * limit, page * limit);
+      return {
+        data: paged,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages,
+          hasNext: page < totalPages,
+          hasPrevious: page > 1,
+        },
+        status: ResponseStatus.SUCCESS,
+        timestamp: new Date().toISOString(),
+      };
+    } catch {
+      return {
+        data: [],
+        pagination: {
+          total: 0,
+          page: 1,
+          limit: 10,
+          totalPages: 0,
+          hasNext: false,
+          hasPrevious: false,
+        },
+        status: ResponseStatus.SUCCESS,
+        timestamp: new Date().toISOString(),
+      };
+    }
+  }
+
+  /**
+   * Find a single audit log entry by ID
+   * @param id The log entry ID
+   * @returns The audit log entry or null
+   */
+  async findById(id: string): Promise<AuditLogEntry<TUser, TMetadata> | null> {
+    const result = await this.find({});
+    return result.data.find((log) => log.id === id) || null;
+  }
+
+  /**
+   * Count audit log entries matching filters
+   * @param filters Filter object
+   * @returns Number of matching entries
+   */
+  async count(
+    filters: Partial<AuditLogEntry<TUser, TMetadata>>,
+  ): Promise<number> {
+    const result = await this.find(filters);
+    return result.data.length;
+  }
+
+  /**
+   * Delete a single audit log entry by ID
+   * @param id The log entry ID
+   * @returns True if deleted, false otherwise
+   */
+  async delete(id: string): Promise<boolean> {
+    try {
+      const data = await fs.readFile(this.filePath, 'utf-8');
+      let logs = JSON.parse(data) as AuditLogEntry<TUser, TMetadata>[];
+      const initialLength = logs.length;
+      logs = logs.filter((log) => log.id !== id);
+      await fs.writeFile(this.filePath, JSON.stringify(logs, null, 2));
+      return logs.length < initialLength;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Delete multiple audit log entries matching filters
+   * @param filters Filter object
+   * @returns Number of deleted entries
+   */
+  async deleteMany(
+    filters: Partial<AuditLogEntry<TUser, TMetadata>>,
+  ): Promise<number> {
+    try {
+      const data = await fs.readFile(this.filePath, 'utf-8');
+      let logs = JSON.parse(data) as AuditLogEntry<TUser, TMetadata>[];
+      const initialLength = logs.length;
+      logs = logs.filter(
+        (log) =>
+          !Object.entries(filters).every(
+            ([k, v]) => log[k as keyof AuditLogEntry<TUser, TMetadata>] === v,
+          ),
+      );
+      await fs.writeFile(this.filePath, JSON.stringify(logs, null, 2));
+      return initialLength - logs.length;
+    } catch {
+      return 0;
+    }
+  }
+}
+
+/**
+ * Factory to get the correct AuditStorage based on config
+ *
+ * @returns AuditStorage instance (MongoAuditStorage or FileAuditStorage)
+ *
+ * @example
+ * const storage = getAuditStorageFromConfig();
+ * await storage.save({ ... });
+ */
+export function getAuditStorageFromConfig(): AuditStorage<any> {
+  const configService = PowertoolsConfigService.getInstance();
+  const auditConfig = configService.getFeatureConfig('audit') as any;
+  const storage = auditConfig?.storage || {
+    type: 'file',
+    filePath: './audit-logs.json',
+  };
+  if (storage.type === 'mongodb' && storage.mongoUrl) {
+    // TODO: Implement actual MongoDB logic here
+    return new MongoAuditStorage();
+  }
+  return new FileAuditStorage(storage.filePath);
 }
 
 /**

@@ -19,6 +19,32 @@ import {
   Environment,
 } from '../types/enums';
 
+/**
+ * Configuration for audit log storage
+ * @property type 'mongodb' or 'file'
+ * @property mongoUrl MongoDB connection string (if type is 'mongodb')
+ * @property filePath Path to JSON file (if type is 'file')
+ */
+export interface AuditStorageConfig {
+  type: 'mongodb' | 'file';
+  mongoUrl?: string;
+  filePath?: string;
+}
+
+/**
+ * Main configuration interface for Powertools
+ *
+ * @property global Global settings (enabled, environment, debug, etc.)
+ * @property pagination Pagination config (defaultPage, defaultLimit, maxLimit, etc.)
+ * @property cache Caching config (strategy, ttl, etc.)
+ * @property validation Validation config (strategy, whitelist, etc.)
+ * @property logging Logging config (level, includeBody, etc.)
+ * @property rateLimit Rate limiting config (strategy, windowMs, max, etc.)
+ * @property audit Audit logging config (see AuditConfig & AuditStorageConfig)
+ * @property resilientHttp HTTP resilience config (timeout, retry, circuitBreaker, etc.)
+ * @property auth Auth config (enabled, requireAll, etc.)
+ * @property custom Any custom config
+ */
 export interface PowertoolsConfig {
   // Global settings
   global?: {
@@ -35,7 +61,9 @@ export interface PowertoolsConfig {
   validation?: ValidationConfig;
   logging?: LoggingConfig;
   rateLimit?: RateLimitConfig;
-  audit?: AuditConfig;
+  audit?: AuditConfig & {
+    storage?: AuditStorageConfig;
+  };
   resilientHttp?: ResilientHttpConfig;
   auth?: AuthConfig;
 
@@ -43,6 +71,11 @@ export interface PowertoolsConfig {
   custom?: Record<string, any>;
 }
 
+/**
+ * Default configuration for Powertools
+ *
+ * You can override any option by passing it to PowertoolsModule.forRoot or PowertoolsConfigService.getInstance.
+ */
 export const DEFAULT_POWERTOOLS_CONFIG: PowertoolsConfig = {
   global: {
     enabled: true,
@@ -104,6 +137,10 @@ export const DEFAULT_POWERTOOLS_CONFIG: PowertoolsConfig = {
     includeResponseBody: false,
     excludeFields: ['password', 'token', 'secret'],
     action: '',
+    storage: {
+      type: 'file',
+      filePath: './audit-logs.json',
+    },
   },
 
   resilientHttp: {
@@ -133,6 +170,19 @@ export const DEFAULT_POWERTOOLS_CONFIG: PowertoolsConfig = {
   },
 };
 
+/**
+ * PowertoolsConfigService
+ *
+ * Singleton service for managing and merging powertools config.
+ *
+ * @method getInstance Get the singleton instance (optionally with initial config)
+ * @method getConfig Get the current config
+ * @method updateConfig Update config at runtime
+ * @method getFeatureConfig Get config for a specific feature
+ * @method isFeatureEnabled Check if a feature is enabled
+ * @method reset Reset to default config
+ * @method validateConfig Validate the config
+ */
 export class PowertoolsConfigService {
   private static instance: PowertoolsConfigService;
   private config: PowertoolsConfig;
