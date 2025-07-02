@@ -1,6 +1,6 @@
 {
   "name": "@kitstack/nest-powertools",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "A comprehensive collection of NestJS powertools, decorators, and utilities to supercharge your backend development",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -50,11 +50,18 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/jwt": "^10.0.0",
     "@nestjs/passport": "^10.0.3",
-    "class-transformer": "^0.5.0",
-    "class-validator": "^0.14.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.0.0",
     "typeorm": "^0.3.0"
+  },
+  "dependencies": {
+    "@nestjs/swagger": "^7.0.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "class-transformer": "^0.5.0",
+    "class-validator": "^0.14.0",
+    "swagger-ui-express": "^5.0.1",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@types/jest": "^29.0.0",
@@ -66,14 +73,17 @@
     "prettier": "^3.6.2",
     "rimraf": "^5.0.0",
     "ts-jest": "^29.0.0",
-    "typeorm": "^0.3.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "typeorm": "^0.3.0"
   },
-  "dependencies": {
-    "@nestjs/swagger": "^7.0.0",
-    "passport": "^0.7.0",
-    "passport-jwt": "^4.0.1",
-    "swagger-ui-express": "^5.0.1",
-    "winston": "^3.17.0"
+  "peerDependenciesMeta": {
+    "@nestjs/axios": { "optional": false },
+    "@nestjs/common": { "optional": false },
+    "@nestjs/core": { "optional": false },
+    "@nestjs/jwt": { "optional": false },
+    "@nestjs/passport": { "optional": false },
+    "reflect-metadata": { "optional": false },
+    "rxjs": { "optional": false },
+    "typeorm": { "optional": false }
   }
 }
