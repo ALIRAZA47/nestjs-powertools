@@ -1,6 +1,6 @@
 {
   "name": "@kitstack/nest-powertools",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A comprehensive collection of NestJS powertools, decorators, and utilities to supercharge your backend development",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

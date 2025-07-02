@@ -83,3 +83,7 @@ export {
   HttpRequestMetrics,
 } from './types/hooks';
 export * from './config/guard-registry';
+
+export * from './hooks/audit-logging.hook';
+export * from './config/powertools.config';
+export * from './powertools.module';

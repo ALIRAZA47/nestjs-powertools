@@ -50,26 +50,26 @@ export class CacheInterceptor implements NestInterceptor {
   private cache = new Map<string, { data: any; expiry: number }>();
 
   /**
-   * Initialize cache interceptor with configuration options
+   * Initialize cache interceptor with configuration options.
    *
-   * @param options - Caching configuration
-   * @param options.ttl - Time-to-live in milliseconds (default: 5 minutes)
-   * @param options.key - Custom cache key (default: auto-generated from request)
+   * @param {object} [options] - Caching configuration.
+   * @param {number} [options.ttl] - Time-to-live in milliseconds (default: 5 minutes).
+   * @param {string} [options.key] - Custom cache key (default: auto-generated from request).
    *
    * @example
-   * \`\`\`typescript
    * // Default configuration
    * const defaultCache = new CacheInterceptor();
    *
+   * @example
    * // Custom TTL for short-lived data
    * const shortCache = new CacheInterceptor({ ttl: 30000 }); // 30 seconds
    *
+   * @example
    * // Custom key for grouped caching
    * const groupedCache = new CacheInterceptor({
    *   key: 'product-catalog',
    *   ttl: 600000 // 10 minutes
    * });
-   * \`\`\`
    */
   constructor(private options: CacheOptions = {}) {
     this.options = {
