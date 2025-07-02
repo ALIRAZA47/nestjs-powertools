@@ -43,6 +43,7 @@ export class CacheInterceptor implements NestInterceptor {
 
   /**
    * Initialize cache interceptor with configuration options.
+   * Initialize cache interceptor with configuration options.
    *
    * @constructor
    * @param {CacheOptions} [options] - Caching configuration.

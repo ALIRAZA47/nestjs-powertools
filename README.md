@@ -28,9 +28,11 @@ A comprehensive toolkit for building robust, scalable, and maintainable NestJS b
 - **Configurable Decorators** for endpoints, roles, permissions, and audit logging
 - **Composite Guards** with AND/OR/NOT logic
 - **Audit Logging** with MongoDB or file-based storage
+- **Audit Logging** with MongoDB or file-based storage
 - **Resilient HTTP** (retry, timeout, circuit breaker) as decorators and services
 - **Validation Pipes** and helpers
 - **Rate Limiting** and caching interceptors
+- **Sort Field Validation Guard** for safe, flexible sorting in list endpoints
 - **Sort Field Validation Guard** for safe, flexible sorting in list endpoints
 - **Full TypeScript generics and enums** for type safety
 - **Extensive configuration options**
