@@ -1,14 +1,10 @@
 /**
- * Response transformation interceptor with standardized formatting
+ * Response transformation interceptor with standardized formatting.
  *
- * @description Automatically wraps all controller responses in a standardized format
- * with success indicators, timestamps, and consistent structure. Ensures API
- * responses follow a uniform pattern across the application.
- *
- * @template T - Type of the response data being transformed
- *
+ * @class
+ * @template T
+ * @description Automatically wraps all controller responses in a standardized format with success indicators, timestamps, and consistent structure. Ensures API responses follow a uniform pattern across the application.
  * @example
- * \`\`\`typescript
  * // Apply globally to standardize all responses
  * @Module({
  *   providers: [
@@ -32,8 +28,6 @@
  * //   data: { id: 1, name: 'John' },
  * //   timestamp: '2024-01-15T10:30:45.123Z'
  * // }
- * \`\`\`
- *
  * @since 1.0.0
  */
 import {
@@ -57,33 +51,22 @@ export class TransformInterceptor<T>
   implements NestInterceptor<T, Response<T>>
 {
   /**
-   * Transform controller responses into standardized format
+   * Transform controller responses into standardized format.
    *
-   * @description Wraps the original response data in a consistent structure with
-   * success indicators and timestamps. Does not modify the original data, only
-   * adds metadata around it.
-   *
-   * @param context - NestJS execution context (not used in this implementation)
-   * @param next - Call handler for the next interceptor or route handler
-   * @returns Observable that emits the transformed response
-   *
+   * @method
+   * @param {ExecutionContext} context - NestJS execution context (not used in this implementation).
+   * @param {CallHandler} next - Call handler for the next interceptor or route handler.
+   * @returns {Observable<Response<T>>} Observable that emits the transformed response.
+   * @description Wraps the original response data in a consistent structure with success indicators and timestamps. Does not modify the original data, only adds metadata around it.
    * @example
-   * \`\`\`typescript
    * // Original controller response:
-   * return { message: 'Hello World' };
-   *
+   * // return { message: 'Hello World' };
    * // Transformed response:
-   * {
-   *   success: true,
-   *   data: { message: 'Hello World' },
-   *   timestamp: '2024-01-15T10:30:45.123Z'
-   * }
-   *
-   * // Works with any data type:
-   * return ['item1', 'item2']; // Arrays
-   * return 'simple string';    // Primitives
-   * return { complex: { nested: 'object' } }; // Complex objects
-   * \`\`\`
+   * // {
+   * //   success: true,
+   * //   data: { message: 'Hello World' },
+   * //   timestamp: '2024-01-15T10:30:45.123Z'
+   * // }
    */
   intercept(
     context: ExecutionContext,

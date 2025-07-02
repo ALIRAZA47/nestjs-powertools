@@ -9,14 +9,11 @@ import type { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 /**
- * Request/response logging interceptor with performance tracking
+ * Request/response logging interceptor with performance tracking.
  *
- * @description Automatically logs HTTP requests and responses with execution timing.
- * Provides detailed logging for debugging, monitoring, and performance analysis.
- * Integrates with NestJS logging system for consistent log formatting.
- *
+ * @class
+ * @description Automatically logs HTTP requests and responses with execution timing. Provides detailed logging for debugging, monitoring, and performance analysis. Integrates with NestJS logging system for consistent log formatting.
  * @example
- * \`\`\`typescript
  * // Apply globally to all routes
  * @Module({
  *   providers: [
@@ -41,8 +38,6 @@ import { tap } from 'rxjs/operators';
  * async getUser(@Param('id') id: string) {
  *   return this.userService.findById(id);
  * }
- * \`\`\`
- *
  * @since 1.0.0
  */
 @Injectable()
@@ -50,25 +45,20 @@ export class LoggingInterceptor implements NestInterceptor {
   constructor(private readonly logger: Logger) {}
 
   /**
-   * Intercept requests to provide comprehensive logging
+   * Intercept requests to provide comprehensive logging.
    *
-   * @description Logs request start, measures execution time, and logs completion
-   * with performance metrics. Provides valuable insights for debugging and monitoring.
-   *
-   * @param context - NestJS execution context containing request information
-   * @param next - Call handler for the next interceptor or route handler
-   * @returns Observable that emits the response with logging side effects
-   *
+   * @method
+   * @param {ExecutionContext} context - NestJS execution context containing request information.
+   * @param {CallHandler} next - Call handler for the next interceptor or route handler.
+   * @returns {Observable<any>} Observable that emits the response with logging side effects.
+   * @description Logs request start, measures execution time, and logs completion with performance metrics. Provides valuable insights for debugging and monitoring.
    * @example
-   * \`\`\`typescript
    * // Example log output:
    * // [LoggingInterceptor] GET /api/users/123 - Start
    * // [LoggingInterceptor] GET /api/users/123 - 45ms
-   *
    * // For error cases:
    * // [LoggingInterceptor] POST /api/users - Start
    * // [LoggingInterceptor] POST /api/users - Error after 120ms
-   * \`\`\`
    */
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();

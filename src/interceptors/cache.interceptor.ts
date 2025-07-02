@@ -1,12 +1,9 @@
 /**
- * In-memory caching interceptor with TTL support
+ * In-memory caching interceptor with TTL support.
  *
- * @description Provides automatic response caching to improve performance by storing
- * and reusing responses for identical requests. Supports configurable TTL (time-to-live)
- * and custom cache keys for fine-grained control.
- *
+ * @class
+ * @description Provides automatic response caching to improve performance by storing and reusing responses for identical requests. Supports configurable TTL (time-to-live) and custom cache keys for fine-grained control.
  * @example
- * \`\`\`typescript
  * // Apply with default settings (5 minute TTL)
  * @Get('expensive-operation')
  * @UseInterceptors(CacheInterceptor)
@@ -24,15 +21,10 @@
  *
  * // Apply with custom cache key
  * @Get('user-specific/:id')
- * @UseInterceptors(new CacheInterceptor({
- *   key: 'user-data',
- *   ttl: 300000 // 5 minutes
- * }))
+ * @UseInterceptors(new CacheInterceptor({ key: 'user-data', ttl: 300000 }))
  * async getUserData(@Param('id') id: string) {
  *   return this.userService.getComplexUserData(id);
  * }
- * \`\`\`
- *
  * @since 1.0.0
  */
 import {
@@ -52,24 +44,17 @@ export class CacheInterceptor implements NestInterceptor {
   /**
    * Initialize cache interceptor with configuration options.
    *
-   * @param {object} [options] - Caching configuration.
+   * @constructor
+   * @param {CacheOptions} [options] - Caching configuration.
    * @param {number} [options.ttl] - Time-to-live in milliseconds (default: 5 minutes).
    * @param {string} [options.key] - Custom cache key (default: auto-generated from request).
-   *
    * @example
    * // Default configuration
    * const defaultCache = new CacheInterceptor();
-   *
-   * @example
    * // Custom TTL for short-lived data
    * const shortCache = new CacheInterceptor({ ttl: 30000 }); // 30 seconds
-   *
-   * @example
    * // Custom key for grouped caching
-   * const groupedCache = new CacheInterceptor({
-   *   key: 'product-catalog',
-   *   ttl: 600000 // 10 minutes
-   * });
+   * const groupedCache = new CacheInterceptor({ key: 'product-catalog', ttl: 600000 });
    */
   constructor(private options: CacheOptions = {}) {
     this.options = {
@@ -79,18 +64,14 @@ export class CacheInterceptor implements NestInterceptor {
   }
 
   /**
-   * Intercept requests to provide caching functionality
+   * Intercept requests to provide caching functionality.
    *
-   * @description Checks cache for existing responses before executing the handler.
-   * If a valid cached response exists, returns it immediately. Otherwise, executes
-   * the handler and caches the result for future requests.
-   *
-   * @param context - NestJS execution context containing request information
-   * @param next - Call handler for the next interceptor or route handler
-   * @returns Observable that emits cached or fresh response data
-   *
+   * @method
+   * @param {ExecutionContext} context - NestJS execution context containing request information.
+   * @param {CallHandler} next - Call handler for the next interceptor or route handler.
+   * @returns {Observable<any>} Observable that emits cached or fresh response data.
+   * @description Checks cache for existing responses before executing the handler. If a valid cached response exists, returns it immediately. Otherwise, executes the handler and caches the result for future requests.
    * @example
-   * \`\`\`typescript
    * // Cache hit scenario:
    * // 1. Request comes in for GET /api/data
    * // 2. Cache key "GET:/api/data" found with valid expiry
@@ -106,7 +87,6 @@ export class CacheInterceptor implements NestInterceptor {
    * // Cache key generation:
    * // Default: "GET:/api/users" (method + URL)
    * // Custom: "user-data" (from options.key)
-   * \`\`\`
    */
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
