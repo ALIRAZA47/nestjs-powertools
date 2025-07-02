@@ -70,8 +70,10 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@nestjs/swagger": "^7.0.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "swagger-ui-express": "^5.0.1",
     "winston": "^3.17.0"
   }
 }
