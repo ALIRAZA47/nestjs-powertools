@@ -34,7 +34,7 @@ describe('Audit Logging Hook', () => {
     it('should find logs by filter', async () => {
       await storage.save(entry);
       const found = await storage.find({ userId: '1' });
-      expect(found.length).toBe(1);
+      expect(found.data.length).toBe(1);
     });
 
     it('should find log by id', async () => {

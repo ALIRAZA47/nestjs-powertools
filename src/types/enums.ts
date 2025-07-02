@@ -90,6 +90,7 @@ export enum PaginationDefaults {
   DEFAULT_PAGE = 1,
   DEFAULT_LIMIT = 10,
   MAX_LIMIT = 100,
+  // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
   MIN_LIMIT = 1,
 }
 

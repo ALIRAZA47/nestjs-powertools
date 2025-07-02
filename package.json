@@ -1,6 +1,6 @@
 {
   "name": "@kitstack/nest-powertools",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "A comprehensive collection of NestJS powertools, decorators, and utilities to supercharge your backend development",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -34,11 +34,11 @@
     "authorization",
     "kitstack"
   ],
-  "author": "KitStack",
+  "author": "Ali Raza Khan <kitstack@alirazakhan.me> (https://alirazakhan.me)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kitstack/nest-powertools.git"
+    "url": "git+https://github.com/kitstack/nest-powertools.git"
   },
   "bugs": {
     "url": "https://github.com/kitstack/nest-powertools/issues"
@@ -54,7 +54,8 @@
     "class-transformer": "^0.5.0",
     "class-validator": "^0.14.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.0.0"
+    "rxjs": "^7.0.0",
+    "typeorm": "^0.3.0"
   },
   "devDependencies": {
     "@types/jest": "^29.0.0",
@@ -66,7 +67,8 @@
     "prettier": "^3.6.2",
     "rimraf": "^5.0.0",
     "ts-jest": "^29.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "typeorm": "^0.3.0"
   },
   "dependencies": {
     "winston": "^3.17.0"

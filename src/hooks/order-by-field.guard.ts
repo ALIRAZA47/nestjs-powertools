@@ -5,6 +5,7 @@ import {
   mixin,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { getMetadataArgsStorage } from 'typeorm';
 
 /**
  * Guard to validate sort/order fields for list endpoints.
@@ -48,7 +49,6 @@ export function SortFieldValidationGuard(
       // If entity is provided and has columns (TypeORM or similar)
       if (entity && typeof entity === 'function') {
         try {
-          const { getMetadataArgsStorage } = await import('typeorm');
           const entCols = getMetadataArgsStorage().columns.filter(
             (col: any) => col.target === entity,
           );
