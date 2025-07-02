@@ -38,12 +38,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kitstack/nest-powertools.git"
+    "url": "git+https://github.com/ALIRAZA47/nestjs-powertools.git"
   },
   "bugs": {
-    "url": "https://github.com/kitstack/nest-powertools/issues"
+    "url": "https://github.com/ALIRAZA47/nestjs-powertools/issues"
   },
-  "homepage": "https://github.com/kitstack/nest-powertools#readme",
+  "homepage": "https://github.com/ALIRAZA47/nestjs-powertools#readme",
   "peerDependencies": {
     "@nestjs/axios": "^4.0.0",
     "@nestjs/common": "^10.0.0",
