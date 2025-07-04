@@ -1,6 +1,7 @@
 import { CircuitBreaker, ResilientHttpService } from '../resilient-http.hook';
 import { CircuitBreakerState } from '../../types/hooks';
 import { of, throwError, lastValueFrom } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 describe('CircuitBreaker', () => {
   const config = { failureThreshold: 2, resetTimeout: 100 };
@@ -17,10 +18,10 @@ describe('CircuitBreaker', () => {
   it('should open after failures', async () => {
     const failingOp = () => throwError(() => new Error('fail'));
     await lastValueFrom(
-      await breaker.execute(failingOp).catch(() => of(undefined)),
+      (await breaker.execute(failingOp)).pipe(catchError(() => of(undefined))),
     );
     await lastValueFrom(
-      await breaker.execute(failingOp).catch(() => of(undefined)),
+      (await breaker.execute(failingOp)).pipe(catchError(() => of(undefined))),
     );
     expect(breaker.getStats().state).toBe(CircuitBreakerState.OPEN);
   });
@@ -28,10 +29,10 @@ describe('CircuitBreaker', () => {
   it('should reset to CLOSED after success in HALF_OPEN', async () => {
     const failingOp = () => throwError(() => new Error('fail'));
     await lastValueFrom(
-      await breaker.execute(failingOp).catch(() => of(undefined)),
+      (await breaker.execute(failingOp)).pipe(catchError(() => of(undefined))),
     );
     await lastValueFrom(
-      await breaker.execute(failingOp).catch(() => of(undefined)),
+      (await breaker.execute(failingOp)).pipe(catchError(() => of(undefined))),
     );
     // Simulate time passing for reset
     (breaker as any).nextAttemptTime = new Date(Date.now() - 1);
