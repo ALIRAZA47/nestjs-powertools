@@ -65,15 +65,18 @@ describe('OrderByFieldValidationGuard', () => {
   });
 
   it('allows entity columns if TypeORM present', async () => {
+    const User = class User {};
     // Mock TypeORM getMetadataArgsStorage
     jest.resetModules();
     jest.doMock('typeorm', () => ({
       getMetadataArgsStorage: () => ({
-        columns: [{ target: class User {}, propertyName: 'username' }],
+        columns: [{ target: User, propertyName: 'username' }],
       }),
     }));
-    const User = class User {};
-    const Guard = SortFieldValidationGuard(User);
+    const { SortFieldValidationGuard: GuardFactory } = await import(
+      '../order-by-field.guard'
+    );
+    const Guard = GuardFactory(User);
     const context = getContext({ orderBy: 'username' });
     await expect(new Guard().canActivate(context)).resolves.toBe(true);
     jest.dontMock('typeorm');
