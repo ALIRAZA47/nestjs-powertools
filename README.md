@@ -28,11 +28,10 @@ A comprehensive toolkit for building robust, scalable, and maintainable NestJS b
 - **Configurable Decorators** for endpoints, roles, permissions, and audit logging
 - **Composite Guards** with AND/OR/NOT logic
 - **Audit Logging** with MongoDB or file-based storage
-- **Audit Logging** with MongoDB or file-based storage
+- **Lightweight in-memory audit option for testing or small apps**
 - **Resilient HTTP** (retry, timeout, circuit breaker) as decorators and services
 - **Validation Pipes** and helpers
 - **Rate Limiting** and caching interceptors
-- **Sort Field Validation Guard** for safe, flexible sorting in list endpoints
 - **Sort Field Validation Guard** for safe, flexible sorting in list endpoints
 - **Full TypeScript generics and enums** for type safety
 - **Extensive configuration options**
@@ -355,6 +354,22 @@ async createOrder(@Body() dto: CreateOrderDto, @CurrentUser() user: User) { ... 
 @Get('sensitive-data/:id')
 async getSensitiveData(@Param('id') id: string) { ... }
 ```
+For minimal setups you can use `SimpleAuditInterceptor` with
+`SimpleInMemoryAuditStorage` and the `SimpleAudit` decorator.  These
+are exported from `@kitstack/nest-powertools` for a lightweight,
+in-memory audit implementation.
+
+```typescript
+const storage = new SimpleInMemoryAuditStorage();
+app.useGlobalInterceptors(new SimpleAuditInterceptor(storage));
+
+@Post('orders')
+@SimpleAudit('CreateOrder')
+create(@Body() dto: CreateOrderDto) {}
+
+// Later
+console.log(storage.getAll()); // inspect saved logs
+```
 
 ### CompositeGuard (see Guards section)
 
@@ -400,6 +415,15 @@ async track(@UserAgent() userAgent: string, @IpAddress() ip: string) { ... }
 ---
 
 ## 🗄️ Audit Logging Storage
+
+### SimpleInMemoryAuditStorage
+- Stores logs in-memory for quick tests or ephemeral setups.
+- **Constructor:**
+```typescript
+new SimpleInMemoryAuditStorage()
+```
+- **Inspect Logs:** `storage.getAll()` returns an array of saved entries.
+- **Reset Logs:** `storage.clear()` empties the in-memory store.
 
 ### FileAuditStorage
 - Stores audit logs in a JSON file. Used automatically if MongoDB is not configured.
