@@ -33,6 +33,12 @@ export {
   AuditUpdate,
   AuditDelete,
 } from './hooks/audit-logging.hook';
+// Lightweight audit hook exports
+export {
+  SimpleInMemoryAuditStorage,
+  SimpleAuditInterceptor,
+  SimpleAudit,
+} from './hooks/audit-simple.hook';
 
 // Guards and interceptors
 export * from './guards/configurable-auth.guard';
@@ -85,5 +91,6 @@ export {
 export * from './config/guard-registry';
 
 export * from './hooks/audit-logging.hook';
+export * from './hooks/audit-simple.hook';
 export * from './config/powertools.config';
 export * from './powertools.module';
