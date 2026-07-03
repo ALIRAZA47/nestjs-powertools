@@ -1,4 +1,3 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, CallHandler } from '@nestjs/common';
 import { of } from 'rxjs';
 import {
@@ -74,12 +73,15 @@ describe('Audit Hook', () => {
     let storage: InMemoryAuditStorage;
     let context: Partial<ExecutionContext>;
     let callHandler: Partial<CallHandler>;
+    let handler: () => void;
 
     beforeEach(() => {
       storage = new InMemoryAuditStorage();
       interceptor = new AuditInterceptor(storage);
+      handler = () => {};
       context = {
-        getHandler: () => () => {},
+        getHandler: () => handler,
+        getClass: () => class TestController {},
         switchToHttp: () => ({
           getRequest: () => ({
             user: { id: '1', email: 'test@test.com' },
@@ -97,11 +99,7 @@ describe('Audit Hook', () => {
     });
 
     it('should intercept and save audit log', (done) => {
-      Reflect.defineMetadata(
-        'audit-config',
-        { action: 'READ' },
-        context.getHandler(),
-      );
+      Reflect.defineMetadata('audit-config', { action: 'READ' }, handler);
       interceptor
         .intercept(context as ExecutionContext, callHandler as CallHandler)
         .subscribe(() => {
